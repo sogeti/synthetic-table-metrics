@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 from synthetic_table_metrics import SyntheticTableMetrics, Data
 
-# Metrics where synthetic is a clone of the orignal dataset:
+# Metrics where synthetic is a clone of the original dataset:
 # Load both datasets
 real = pd.read_csv(Path("data", "iris_original.csv"))
 synthetic = pd.read_csv(Path("data", "iris_original.csv"))
