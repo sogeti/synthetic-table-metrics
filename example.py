@@ -2,25 +2,26 @@ import json
 from pathlib import Path
 
 import pandas as pd
-from metrics import Metrics
-from data_container import Data
+from synthetic_table_metrics import SyntheticTableMetrics, Data
 
 # Metrics where synthetic is a clone of the orignal dataset:
-
 # Load both datasets
 real = pd.read_csv(Path("data", "iris_original.csv"))
 synthetic = pd.read_csv(Path("data", "iris_original.csv"))
+# Put datasets in datacontainer
 data = Data(real, synthetic)
-metrics = Metrics()
+# Create metrics object and run for data
+metrics = SyntheticTableMetrics()
 results = metrics.run(data)
-print("COPY:")
+# Print results
+print("\n-- COPY:")
 print(json.dumps(results, indent=2))
 
 
-# Metrics on a bad synthetic dataset
+# Metrics on a bad synthetic dataset:
 synthetic = pd.read_csv(Path("data", "iris_bad_synthetic_data.csv"))
 data = Data(real, synthetic)
-metrics = Metrics()
+metrics = SyntheticTableMetrics()
 results = metrics.run(data)
-print("BAD SYNTHETIC DATA:")
+print("\n-- BAD SYNTHETIC DATA:")
 print(json.dumps(results, indent=2))

@@ -20,7 +20,6 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
 
-from data_container import Data
 
 # Possible models to try to separate real and synthetic datasets
 MODELS = {
@@ -99,18 +98,4 @@ class Detection:
         """
         X, y = self.create_labeled_dataset(data)
         auroc = self.calculate_detectability(X, y)
-        return 1 - ((auroc - 0.5) * 2)  # Detection value
-
-
-if __name__ == "__main__":
-    # Load both datasets
-    real = pd.read_csv("iris_original.csv")
-    # synthetic = pd.read_csv("iris_fake_01.csv", index_col=False)
-    synthetic = pd.read_csv("iris_bad_data.csv", index_col=False)
-    synthetic = synthetic.drop(synthetic.columns[0], axis=1)
-    data = Data(real, synthetic)
-
-    # Calculate the detection
-    detection = Detection()
-    auroc = detection.run(data)
-    print(auroc)
+        return (auroc - 0.5) * 2  # Detection value
