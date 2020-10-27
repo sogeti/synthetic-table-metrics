@@ -8,7 +8,7 @@ original table.
 Install from git repo:
 
 ```sh
-pip install git+https://gitlab.sogeticloudservices.com/bi-a-internal/synthetic_table_metrics.git
+pip install git+https://github.com/sogeti/synthetic-table-metrics
 ```
 
 ## TODO list
