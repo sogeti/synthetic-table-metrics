@@ -10,15 +10,15 @@ dataset using machine learning?
 - The higher the auroc, the worse the synthetic data.
 """
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from rdt import HyperTransformer
-from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.preprocessing import RobustScaler
-from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import RobustScaler
+from sklearn.svm import SVC
 
 
 # Possible models to try to separate real and synthetic datasets
