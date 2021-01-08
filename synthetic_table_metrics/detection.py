@@ -11,8 +11,6 @@ dataset using machine learning?
 """
 
 import numpy as np
-import pandas as pd
-from rdt.hyper_transformer import HyperTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold
