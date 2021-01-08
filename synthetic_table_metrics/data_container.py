@@ -2,8 +2,7 @@
 
 Simple container class for real and synthetic data.
 """
-import pandas as pd
-from rdt import HyperTransformer
+from rdt.hyper_transformer import HyperTransformer
 
 
 class Data:
