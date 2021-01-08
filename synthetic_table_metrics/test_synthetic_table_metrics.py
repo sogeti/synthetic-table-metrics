@@ -11,14 +11,15 @@ from synthetic_table_metrics.synthetic_table_metrics import SyntheticTableMetric
 class TestSyntheticTableMetrics(unittest.TestCase):
     @staticmethod
     def test_on_census_dataset():
-        # The census dataset is larger then the dataset used to develop this package.
-        # The size of the dataset caused an error, this is why we explicitely test on
-        # this dataset.
+        # The census dataset is larger then the dataset used to develop
+        # this package. The size of the dataset caused an error, this
+        # is why we explicitely test on this dataset.
         real = pd.read_csv(Path("data", "census.csv"))
         synthetic = cast(
             pd.DataFrame,
             pd.read_csv(Path("data", "census.csv")),
         )
+        # Take a subset of the data
         synthetic = synthetic.head(200)
 
         data = Data(real, synthetic)
