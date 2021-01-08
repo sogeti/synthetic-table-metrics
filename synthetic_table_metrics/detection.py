@@ -12,7 +12,7 @@ dataset using machine learning?
 
 import numpy as np
 import pandas as pd
-from rdt import HyperTransformer
+from rdt.hyper_transformer import HyperTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold
@@ -23,7 +23,7 @@ from sklearn.svm import SVC
 
 # Possible models to try to separate real and synthetic datasets
 MODELS = {
-    "logistic": LogisticRegression(solver="lbfgs"),
+    "logistic": LogisticRegression(solver="liblinear"),
     "SVC": SVC(probability=True, gamma="scale"),
 }
 
@@ -67,7 +67,6 @@ class Detection:
 
     def calculate_detectability(self, X, y):
         """
-
         Train models to separate the real and synthetic data. Then
         calculate the AUROC for each model and return the average of
         the AUROC scores.
