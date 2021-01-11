@@ -1,4 +1,5 @@
 import unittest
+from unittest import skip
 from typing import cast
 from pathlib import Path
 
@@ -6,6 +7,18 @@ import pandas as pd
 
 from synthetic_table_metrics.data_container import Data
 from synthetic_table_metrics.synthetic_table_metrics import SyntheticTableMetrics
+
+
+class TestIrisTableMetrics(unittest.TestCase):
+    @staticmethod
+    def test_on_copy():
+        real = pd.read_csv(Path("data", "iris_original.csv"))
+        synthetic = pd.read_csv(Path("data", "iris_original.csv"))
+        data = Data(real, synthetic)
+        metrics = SyntheticTableMetrics()
+        result = metrics.run(data)
+        ks = result.keys()
+        assert "detectability" in ks
 
 
 class TestSyntheticTableMetrics(unittest.TestCase):
