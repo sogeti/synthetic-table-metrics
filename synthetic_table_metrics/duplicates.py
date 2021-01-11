@@ -19,85 +19,8 @@ def cut_to_similar_length(real, synthetic):
 
 
 class DuplicateCounter:
-    def __init__(self, max_count=1000):
-        # DuplicateCounter config
-        self.max_count = max_count
-
     @staticmethod
-    def simple_count(data):
-        """
-        Search all rows of the real and synthetic dataset for duplicates.
-
-        Return the number of duplicates. Return the count as a fraction of
-        the length of the real dataset.
-
-        Parameters
-        ----------
-        data: Data
-            data_container
-
-        Returns
-        -------
-        duplicate_fraction: float
-            fraction of duplicates between real and synthetic data
-        """
-        c = 0
-        for r1, r2 in itertools.product(data.real, data.synthetic):
-            if np.allclose(r1, r2, atol=1e-4):
-                c += 1
-        return c / data.real.shape[0]
-
-    @staticmethod
-    def simple_count_internal(data):
-        """
-        Count the duplicate rows within data.synthetic.
-
-        Return the number of duplicate rows as a fraction of the length
-        of data.synthetic.
-
-        Parameters
-        ----------
-        data: Data
-            data_container
-
-        Returns
-        -------
-        duplicate_fraction: float
-            fraction of duplicate values in data.synthetic.
-        """
-        u, c = np.unique(data.synthetic, axis=0, return_counts=True)
-        # TODO: are we counting double now, or not?
-        return u[c > 1].sum() / data.synthetic.shape[0]
-
-    @staticmethod
-    def count_fraction_internal(data, max_count):
-        """
-        Count the duplicates within a fraction of size max_count within
-        the data.synthetic array, return the counts as a fraction of
-        the max_count value.
-        """
-        tmp = (data.synthetic[np.random.randint(data.synthetic.shape[0], size=2), :],)
-        u, c = np.unique(tmp, axis=0, return_counts=True)
-        # TODO: are we counting double now, or not?
-        return u[c > 1].sum() / max_count
-
-    @staticmethod
-    def count_fraction(data, max_count):
-        """
-        Select a 1000 rows from each dataset and check if there
-        are duplicates between thows
-        """
-        c = 0
-        for r1, r2 in itertools.product(
-            data.real[np.random.randint(data.real.shape[0], size=2), :],
-            data.synthetic[np.random.randint(data.synthetic.shape[0], size=2), :],
-        ):
-            if np.allclose(r1, r2, atol=1e-4):
-                c += 1
-        return c / max_count
-
-    @staticmethod
-    def count_duplicates(d):
+    def count_internal_duplicates(d):
         """
         "Quick" method to count the internal duplicates of a 2D numpy
         array.
@@ -112,14 +35,39 @@ class DuplicateCounter:
         n_unique = np.shape(np.unique(b).view(d.dtype).reshape(-1, d.shape[1]))[0]
         return (len(d) - n_unique) / len(d)
 
+    @staticmethod
+    def count_intersect(d1, d2):
+
+        # Convert to contigious arrays, this method fails for normal
+        # arrays when they are very large
+        d1 = np.ascontiguousarray(d1)
+        d2 = np.ascontiguousarray(d2)
+
+        _, ncols = d1.shape  # Get info on array 1
+        # Create a dtype dict
+        dtype = {
+            "names": [f"{i:f}" for i in range(ncols)],
+            "formats": ncols * [d1.dtype],
+        }
+
+        # take the intersect of new views of both arrays, this is a
+        # trick to make intersect1d work with 2d arrays. Take the
+        # length of the number of duplicates returned by interect1d
+        duplicates = np.intersect1d(
+            d1.view(dtype), d2.view(dtype), assume_unique=True
+        ).shape[0]
+
+        # Calculate the fraction of duplicates over the shortest array
+        l1, l2 = d1.shape[0], d2.shape[0]
+        divider = l1 if l1 < l2 else l2
+        return duplicates / divider
+
     def run(self, data):
         """
         Concatenate real and synth to check for duplicates within
         and between both arrays. Then check the number of duplicates
         within the synthesized dataset.
         """
-        real_vs_synth = self.count_duplicates(
-            np.concatenate((data.real, data.synthetic), axis=0)
-        )
-        synth_duplicates = self.count_duplicates(data.synthetic)
+        real_vs_synth = self.count_intersect(data.real, data.synthetic)
+        synth_duplicates = self.count_internal_duplicates(data.synthetic)
         return real_vs_synth, synth_duplicates
