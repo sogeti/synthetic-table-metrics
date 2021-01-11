@@ -37,7 +37,10 @@ class DuplicateCounter:
 
     @staticmethod
     def count_intersect(d1, d2):
-
+        """
+        Count the number of duplicate rows between 2 2D numpy
+        arrays.
+        """
         # Convert to contigious arrays, this method fails for normal
         # arrays when they are very large
         d1 = np.ascontiguousarray(d1)
