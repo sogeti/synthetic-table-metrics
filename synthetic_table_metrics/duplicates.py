@@ -1,6 +1,7 @@
 import itertools
 import pandas as pd
 import numpy as np
+from numpy.lib import recfunctions as rfn
 
 from rdt.hyper_transformer import HyperTransformer
 
@@ -95,20 +96,30 @@ class DuplicateCounter:
                 c += 1
         return c / max_count
 
+    @staticmethod
+    def count_duplicates(d):
+        """
+        "Quick" method to count the internal duplicates of a 2D numpy
+        array.
+
+        First prepare the array, then count the number of unique rows
+        in the array. Finally, return the number of duplicates over
+        the number of rows in the array.
+        """
+        b = np.ascontiguousarray(d).view(
+            np.dtype((np.void, d.dtype.itemsize * d.shape[1]))
+        )
+        n_unique = np.shape(np.unique(b).view(d.dtype).reshape(-1, d.shape[1]))[0]
+        return (len(d) - n_unique) / len(d)
+
     def run(self, data):
         """
-        Depending on size of the real data, compare all rows in search
-        for duplicates, or check a fraction of the dataset.
+        Concatenate real and synth to check for duplicates within
+        and between both arrays. Then check the number of duplicates
+        within the synthesized dataset.
         """
-        real_vs_synth = self.simple_count(data)
-        synth_duplicates = self.simple_count_internal(data)
+        real_vs_synth = self.count_duplicates(
+            np.concatenate((data.real, data.synthetic), axis=0)
+        )
+        synth_duplicates = self.count_duplicates(data.synthetic)
         return real_vs_synth, synth_duplicates
-
-        # if data.real.shape[0] < self.max_count:
-        # real_vs_synth = self.simple_count(data)
-        # synth_duplicates = self.simple_count_internal(data)
-        # return real_vs_synth, synth_duplicates
-        # else:
-        # real_vs_synth = self.count_fraction(data, 1000)
-        # synth_duplicates = self.count_fraction_internal(data, 1000)
-        # return real_vs_synth, synth_duplicates
