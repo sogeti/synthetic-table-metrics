@@ -10,20 +10,18 @@ dataset using machine learning?
 - The higher the auroc, the worse the synthetic data.
 """
 
-import pandas as pd
 import numpy as np
-from rdt import HyperTransformer
-from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.preprocessing import RobustScaler
-from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import RobustScaler
+from sklearn.svm import SVC
 
 
 # Possible models to try to separate real and synthetic datasets
 MODELS = {
-    "logistic": LogisticRegression(solver="lbfgs"),
+    "logistic": LogisticRegression(solver="liblinear"),
     "SVC": SVC(probability=True, gamma="scale"),
 }
 
@@ -67,7 +65,6 @@ class Detection:
 
     def calculate_detectability(self, X, y):
         """
-
         Train models to separate the real and synthetic data. Then
         calculate the AUROC for each model and return the average of
         the AUROC scores.
